@@ -14,6 +14,7 @@ const app = Vue.createApp({
       monsterHealth: 100,
       currentRound: 0,
       winner: null,
+      logMessages: [],
     };
   },
   computed: {
@@ -59,11 +60,13 @@ const app = Vue.createApp({
       this.monsterHealth = 100;
       this.winner = null;
       this.currentRound = 0;
+      this.logMessages = [];
     },
     attackMonster() {
       this.currentRound++;
       const attackValue = getRandomValue(5, 12);
       this.monsterHealth -= attackValue;
+      this.addLogMessage("player", "attack", attackValue);
 
       // we can access methods through the 'this' keyword
       // we want the monster to attack us after we attack it
@@ -72,11 +75,13 @@ const app = Vue.createApp({
     attackPlayer() {
       const attackValue = getRandomValue(8, 12);
       this.playerHealth -= attackValue;
+      this.addLogMessage("monster", "attack", attackValue);
     },
     specialAttackMonster() {
       this.currentRound++;
       const attackValue = getRandomValue(10, 25);
       this.monsterHealth -= attackValue;
+      this.addLogMessage("player", "special-attack", attackValue);
 
       this.attackPlayer();
     },
@@ -90,11 +95,18 @@ const app = Vue.createApp({
       } else {
         this.playerHealth += healValue;
       }
-
+      this.addLogMessage("player", "heal", healValue);
       this.attackPlayer();
     },
     surrender() {
       this.winner = "monster";
+    },
+    addLogMessage(who, what, value) {
+      this.logMessages.unshift({
+        actionBy: who,
+        actionType: what,
+        actionValue: value,
+      });
     },
   },
 });
@@ -106,4 +118,6 @@ Notes:
 Math.random() gives us a random number between 0 and 1, to set the range you multiply it
 between the difference of max - min and then take the Math.floor of it to round it down (so we don't have a decimal)
 and then add the minimum again.
+
+The `.unshift` method adds something to the beginning of the array
 */
